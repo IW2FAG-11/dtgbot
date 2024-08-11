@@ -140,6 +140,10 @@ function PreProcess_Received_Message(tt)
         ReceivedText = "video " .. filelink
         msg_type = "video"
       end
+		elseif msg.chat.type == 'private' and not msg.text then
+      ReceivedText = 'other_private_message ' .. _G.JSON.encode(tt)
+      --return 'ignore private-internal msg as there is no text field defined.'
+      Print_to_Log(0, 'private message without text field: Try to pass to otherprivatemessage.lua or sh script.')
     end
     --------------------------------------------------------------------------------------------
     -- Handle the received command and capture any errors to avoid hardcrash
@@ -170,6 +174,9 @@ function PreProcess_Received_Message(tt)
         elseif msg_type == "video" then
           Print_to_Log(0, "!! Video file received but video_note.sh or lua not found to process it. Skipping the message.")
           Telegram_SendMessage(grp_from, "⚡️ video_note.sh or lua missing?? ⚡️", msg_id)
+        elseif msg_type == "private" then
+          Print_to_Log(0, "!! Other messages received but other_private_message.sh or lua not found to process it. Skipping the message.")
+          Telegram_SendMessage(grp_from, "⚡️ other_private_message.sh or lua missing?? ⚡️", msg_id)
         else
           --print(ReceivedText)
           Print_to_Log(0, Sprintf("!! error in command: %s - %s ", result, result_err))
